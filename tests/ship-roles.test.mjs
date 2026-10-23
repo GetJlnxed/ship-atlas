@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {catalogRoles,shipRoleProfile,ROLE_REVIEW,roleReviews,roleCoverage} from '../src/ship-roles.js';
+import {followupReviewNames} from '../src/role-review-data.js';
 const catalog=JSON.parse(fs.readFileSync('public/data/catalog.json','utf8'));
 const now=new Date('2026-10-23T12:00:00Z');
 const ship=name=>catalog.ships.find(s=>s.name===name);
@@ -33,10 +34,10 @@ test('every flight-ready entry has an explicit audit, including ground and speci
  assert.deepEqual(Object.keys(roleReviews).sort(),ready.map(s=>s.name).sort());
  for(const s of ready){const p=profile(s.name);assert.equal(p.reviewed,true,s.name);assert.ok(p.roles.length&&p.reason&&p.context,s.name)}
  const c=roleCoverage(catalog.ships,ROLE_REVIEW.patch,now);
- assert.deepEqual(c,{available:231,reviewed:231,rated:52,meta:23,mixed:28,offmeta:1,unknown:179});
+ assert.deepEqual(c,{available:231,reviewed:231,rated:71,meta:23,mixed:43,offmeta:5,unknown:160});
  assert.equal(profile('ROC').reviewed,true);
- assert.equal(profile('ROC').rated,false);
- assert.equal(profile('ROC').status,'unknown');
+ assert.equal(profile('ROC').rated,true);
+ assert.equal(profile('ROC').status,'mixed');
  assert.equal(profile('Golem OX').status,'unknown');
  assert.equal(profile('Golem').status,'meta');
  assert.equal(profile('MOLE').status,'meta');
@@ -46,4 +47,27 @@ test('every flight-ready entry has an explicit audit, including ground and speci
  for(const name of ['Javelin','Bengal'])assert.match(profile(name).reason,/доступность обычного владения/);
  assert.equal(roleCoverage(catalog.ships,'4.11.0-live.1',now).reviewed,0);
  assert.equal(shipRoleProfile({name:'New ship',values:{status:'flight-ready'}},ROLE_REVIEW.patch,now).reviewed,false);
+});
+
+test('follow-up distinguishes reports, tentative judgments, and unresearched catalogue descriptions',()=>{
+ assert.equal(followupReviewNames.length,27);
+ for(const name of followupReviewNames){
+  const p=profile(name);
+  assert.equal(p.playerReports,true,name);
+  assert.ok(['limited','moderate'].includes(p.confidence),name);
+  assert.ok(p.sources.some(s=>s.url.includes('reddit.com/')),name);
+ }
+ assert.equal(profile('400i').status,'offmeta');
+ assert.match(profile('400i').context,/повседневных/);
+ assert.equal(profile('Hull C').status,'offmeta');
+ assert.equal(profile('ROC-DS').status,'offmeta');
+ assert.equal(profile('SRV').status,'mixed');
+ assert.match(profile('Prowler').roles.join(' '),/Скрытная канонерка/);
+ assert.equal(profile('C8R Pisces').rated,false);
+ assert.equal(profile('C8R Pisces').playerReports,true);
+ assert.equal(profile('Talon Shrike').playerReports,false);
+ assert.equal(profile('Starfarer Gemini').status,'unknown');
+ assert.equal(profile('Cutter Scout').status,'unknown');
+ assert.equal(profile('Syulen').status,'unknown');
+ assert.equal(shipRoleProfile(ship('400i'),'4.10.2-ptu.12913470',now).playerReports,false);
 });

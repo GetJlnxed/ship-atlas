@@ -21,10 +21,22 @@ it('shows an explicit evidence gap for a reviewed model without a meta verdict',
  vi.setSystemTime(new Date('2026-10-23T12:00:00Z'));
  vi.stubGlobal('fetch',vi.fn(async()=>({ok:true,json:async()=>catalog})));
  wrapper=mount(App,{attachTo:document.body});await flushPromises();
- expect(wrapper.get('.meta-coverage').text()).toContain('231 / 231');
- expect(wrapper.get('.meta-coverage').text()).toContain('179');
+ expect(wrapper.get('.meta-coverage').text()).toContain('Оценка меты · 71 / 231');
+ expect(wrapper.get('.meta-coverage').text()).toContain('160');
  await wrapper.get('[aria-label="Поиск корабля"]').setValue('Zeus Mk II ES');
  await wrapper.get('.ship-photo-button').trigger('click');
- expect(wrapper.get('.ship-role-details').text()).toContain('Недостаточно данных о мете');
- expect(wrapper.get('.evidence-gap').text()).toContain('место в мете не установлено');
+ expect(wrapper.get('.ship-role-details').text()).toContain('Мета не определена');
+ expect(wrapper.get('.evidence-gap').text()).toContain('Место в мете не установлено');
+});
+
+it('shows confidence and dated sources for a new player assessment',async()=>{
+ vi.setSystemTime(new Date('2026-10-23T12:00:00Z'));
+ vi.stubGlobal('fetch',vi.fn(async()=>({ok:true,json:async()=>catalog})));
+ wrapper=mount(App,{attachTo:document.body});await flushPromises();
+ await wrapper.get('[aria-label="Поиск корабля"]').setValue('400i');
+ expect(wrapper.get('.meta-chip.offmeta').text()).toContain('повседневных задач');
+ await wrapper.get('.ship-photo-button').trigger('click');
+ expect(wrapper.get('.evidence-confidence').text()).toContain('средняя');
+ expect(wrapper.get('.role-evidence').text()).toContain('12 октября');
+ expect(wrapper.find('.evidence-gap').exists()).toBe(false);
 });
