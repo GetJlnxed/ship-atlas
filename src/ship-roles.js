@@ -24,13 +24,13 @@ export function shipRoleProfile(ship, patch, now = new Date()) {
  const rated=reviewed&&status!=='unknown';
  const roles=reviewed?record.roles:catalogRoles(v.focus);
  const basis=reviewed?record.basis:null;
- const roleNote=basis==='players'?'Оценка по свежим обсуждениям игроков для указанной задачи; не статистический рейтинг.':basis==='edition'?'Специальная версия разобрана отдельно. Рейтинг базового корабля не переносится без проверки отличий.':reviewed?'Разобраны назначение и ограничения. Свежих сравнений игроков недостаточно: это описание применения, не подтверждение меты.':'Роли из каталога; актуальная практическая оценка отсутствует.';
- const label=!ready?'Мета не оценена':status==='meta'?`Мета · ${record.context}`:status==='offmeta'?`Не мета · ${record.context}`:status==='mixed'?`Спорный выбор · ${record.context}`:reviewed?'Недостаточно данных о мете':'Мета не проверена';
+ const roleNote=basis==='players'?(rated?'Редакционная оценка по отзывам игроков для указанной задачи; не статистика побед и не утверждение о согласии всего сообщества.':'Отзывы игроков найдены и приведены ниже, но они пока не определяют место корабля в мете.'):basis==='edition'?'Специальная версия разобрана отдельно. Рейтинг базового корабля не переносится без проверки отличий.':reviewed?'Пока есть описание назначения и ограничений. Подборка отзывов для оценки меты этой модели ещё не завершена.':'Роли из каталога; актуальная практическая оценка отсутствует.';
+ const label=!ready?'Мета не оценена':status==='meta'?`Мета · ${record.context}`:status==='offmeta'?`Не мета · ${record.context}`:status==='mixed'?`Спорный выбор · ${record.context}`:'Мета не определена';
  const links=reviewed?[...record.sources]:[];
  // Catalogue links support specifications only, never a meta verdict.
  if(reviewed&&ship.fleetUrl&&!links.some(s=>s.url===ship.fleetUrl))links.push({label:'Оснащение и назначение · FleetYards (не рейтинг)',url:ship.fleetUrl});
  if(reviewed&&!links.length&&ship.rsiUrl)links.push({label:'Заявленное оснащение · RSI (не рейтинг)',url:ship.rsiUrl});
- return {roles:roles.length?roles:['Роль не уточнена'],status,label,roleNote,reviewed,rated,basis,context:reviewed?record.context:null,crew:reviewed?record.crew:null,
+ return {roles:roles.length?roles:['Роль не уточнена'],status,label,roleNote,reviewed,rated,basis,playerReports:reviewed&&Boolean(record.playerReports||basis==='players'),confidence:reviewed?record.confidence:null,context:reviewed?record.context:null,crew:reviewed?record.crew:null,
   reason:reviewed?record.reason:!ready?'Корабль не отмечен доступным в каталоге: текущая игровая мета не оценивается.':record&&!current?'Оценка требует обновления: изменился патч каталога или прошло больше 30 дней после обзора.':'Для этой модели ещё нет разбора. Отсутствие оценки не означает, что корабль слабый.',
   sources:links,patch:ROLE_REVIEW.patch,date:ROLE_REVIEW.date};
 }

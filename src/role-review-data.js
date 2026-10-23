@@ -1,5 +1,5 @@
-// Editorial audit of every flight-ready catalogue entry, 2026-10-23.
-// A catalogue review is not evidence of player-meta standing. Unknown stays neutral.
+// Role descriptions cover the catalogue; only sourced player judgments count as meta assessments.
+// Missing evidence must not be converted into a negative verdict.
 export const reviewSources = {
  pve: {label:'Игроки: выбор для PvE · 18 октября',url:'https://www.reddit.com/r/starcitizen/comments/1x90rp1/what_are_the_best_solo_pve_combat_ships_available/'},
  miners: {label:'Игроки: Golem, Prospector и MOLE · 19 октября',url:'https://www.reddit.com/r/starcitizen/comments/1xa1iq9/lets_talk_mining/'},
@@ -199,3 +199,64 @@ for(const [name,base] of Object.entries(reviewedEditions)) {
  expandedReviews[name]={...parent,status:'unknown',basis:'edition',base,
   reason:`Специальная версия ${base}. Практическая роль та же; отличие штатной комплектации и отдельные результаты LIVE не проверены. Цветной рейтинг базовой версии не перенесён.`};
 }
+
+// Follow-up: dated player reports from the current LIVE period. These are editorial
+// judgments, not measured win rates. A positive anecdote alone stays unrated.
+const followupSources = {
+ origin: ['400i: опыт владельцев · 12 октября', 'https://www.reddit.com/r/starcitizen/comments/1x3oe8o/anybody_still_flying_the_400i/', '2026-10-12'],
+ hull: ['Hull C: погрузка и разгрузка · 19–23 октября', 'https://www.reddit.com/r/starcitizen/comments/1xa3cv1/we_will_never_have_funcional_hullc/', '2026-10-19'],
+ refuel: ['Заправщики: вместимость и контракты · 20 октября', 'https://www.reddit.com/r/starcitizen/comments/1xalx2u/do_we_think_there_is_the_possibility_of_a_midsize/', '2026-10-20'],
+ gems: ['GEO против ROC и ROC-DS · 22 октября', 'https://www.reddit.com/r/starcitizen/comments/1xcaufz/so_relaxing_when_the_geo_actually_wants_to_pick/', '2026-10-22'],
+ extraction: ['Наземная добыча: разные результаты игроков · 20 октября', 'https://www.reddit.com/r/starcitizen/comments/1xafuep/does_cig_hate_miners/', '2026-10-20'],
+ towing: ['SRV: применение с утилизаторами и ограничения · 18–21 октября', 'https://www.reddit.com/r/LowSodiumStarCitizen/comments/1x8uk1h/missions_for_the_argo_srv/', '2026-10-18'],
+ smallFleet: ['Zeus CL и Railen для небольшой группы · 22 октября', 'https://www.reddit.com/r/starcitizen_fleets/comments/1xckrlw/preiae_fleet/', '2026-10-22'],
+ drops: ['Десантные корабли и скрытная канонерка Prowler · 14 октября', 'https://www.reddit.com/r/starcitizen/comments/1x6177d/drop_ships/', '2026-10-14'],
+ starters: ['Cutter, Intrepid и Aurora Mk II: отзывы о стартовых кораблях · 14–16 октября', 'https://www.reddit.com/r/starcitizen/comments/1x602mx/only_one_starter_pack_now_new_or_old_news/', '2026-10-14'],
+ capture: ['Охота за головами: состояние захвата и камер в 4.10.2 · 15 октября', 'https://www.reddit.com/r/starcitizen/comments/1x69csz/any_news_on_bounty_hunting_v2_its_been_almost_2/', '2026-10-15'],
+ soloFleet: ['C8R: отзыв о покупке и применении · 23 октября', 'https://www.reddit.com/r/starcitizen_fleets/comments/1xcpot4/my_humble_solo_fleet_all_oc_except_the_referral/', '2026-10-23'],
+ medRover: ['C8R и Ursa Medivac: размещение и медицинская поддержка · 10–17 октября', 'https://www.reddit.com/r/starcitizen/comments/1x24j3d/so_can_the_cargo_hold_of_the_new_constellation/', '2026-10-10'],
+ ems: ['Медицинские игроки: ограничения профессии · 17–18 октября', 'https://www.reddit.com/r/starcitizen/comments/1x8oqus/id_love_to_see_a_proper_ems_career_with_npc/', '2026-10-17'],
+ daily: ['Terrapin Medic: свежий отзыв от 23 октября в старой теме', 'https://www.reddit.com/r/starcitizen/comments/1vm8w4i/whats_your_daily_flyer_q3_discussion_thread/', '2026-10-23'],
+ agingNow: ['Владельцы старых корпусов: ограничения · 22 октября', 'https://www.reddit.com/r/starcitizen/comments/1xcdepg/any_rumors_about_the_next_old_ship_that_is/', '2026-10-22'],
+ tali: ['Retaliator: опыт владельца · 23 октября', 'https://www.reddit.com/r/starcitizen_fleets/comments/1xd68pt/iae_plan/', '2026-10-23'],
+ knownIssues: ['CIG: известные ошибки LIVE 4.10.2 · не рейтинг', 'https://support.robertsspaceindustries.com/hc/en-us/articles/360056254754-Star-Citizen-Alpha-4-10-2-Known-Issues', '2026-10-09'],
+};
+for(const [key,[label,url,publishedAt]] of Object.entries(followupSources))reviewSources[key]={label,url,publishedAt};
+export const followupReviewNames=[];
+function assess(name, status, context, reason, refs, confidence='limited', roles) {
+ const previous=expandedReviews[name];
+ if(!previous)throw new Error(`Unknown follow-up model: ${name}`);
+ expandedReviews[name]={...previous,status,context,reason,basis:'players',confidence,
+  playerReports:true,sources:refs.map(key=>reviewSources[key]),
+  ...(roles?{roles:roles.split('|')}:{})};
+ followupReviewNames.push(name);
+}
+assess('400i','offmeta','эффективность повседневных задач','Владельцы хвалят интерьер, но повторно отмечают слабые оружие, грузовые возможности и потерю прежних преимуществ. Для эффективности контрактов — вне меты; удовольствие от прогулок эта оценка не измеряет.',['origin'],'moderate');
+assess('Hull C','offmeta','надёжность грузовых рейсов','Повторяются жалобы на погрузку и особенно разгрузку через грузовые сервисы. Для стабильных рейсов сейчас не рекомендован. Ручная загрузка остаётся обходным путём; общий баг потери сознания не считаем уникальным недостатком Hull C.',['hull'],'moderate');
+assess('Starlite','offmeta','серия заправочных контрактов','Владельцы сообщают, что ограниченный запас каждого вида топлива мешает последовательно выполнять контракты. Для серии рейсов предпочитают более вместительный Starfarer; это не запрет на отдельные малые заправки.',['refuel'],'limited');
+assess('Starfarer','mixed','заправочные контракты','Больший запас топлива позволяет брать более крупные заказы, чем Starlite. Но игроки отмечают зависимость числа выполненных контрактов от объёма запроса; безусловно выгодной профессией заправку не называют.',['refuel'],'limited');
+assess('ATLS GEO','mixed','добыча самоцветов','В прямом сравнении игроки предпочитают GEO для дробления, но жалуются на маленькую ёмкость и сбои сбора. Есть рабочая связка GEO для дробления + ROC для сбора; отзывы о надёжности расходятся.',['gems','extraction'],'moderate');
+assess('ROC','mixed','сбор самоцветов','Игроки используют ROC для сбора после GEO и ценят его ёмкость. Для самого дробления предпочитают GEO; сообщения о сбоях экстрактора противоречивы. Это полезный выбор с ограничениями, не однозначный лидер.',['gems','extraction'],'moderate');
+assess('ROC-DS','offmeta','эффективность наземной добычи','В сравнении с GEO игроки критикуют открытое место оператора и слабую отдачу от второго места. Для эффективной добычи предпочтение отдают GEO или связке с обычным ROC. Основание ограничено небольшим обсуждением.',['gems'],'limited');
+assess('SRV','mixed','поддержка утилизации','Есть реальные вылеты с друзьями: SRV вытаскивает корабли для утилизатора. При этом буксировка через квант, ограничения зон и исчезновение объектов мешают работе. Для самостоятельного заработка на буксировочных контрактах отзывы отрицательные.',['towing'],'moderate');
+assess('Zeus Mk II CL','mixed','универсальный корабль группы','В обсуждении группы из 2–4 игроков Zeus ценят за гибкость; владелец одновременно недоволен скоростью, защитой и вооружением. Рабочий компромисс для разных задач, без оснований объявлять лидером перевозок.',['smallFleet'],'limited');
+assess('Railen','mixed','перевозки группой 2–4','В свежем обсуждении Railen рекомендуют небольшой группе и хвалят сочетание возможностей. Это отдельная рекомендация, а не согласованный рейтинг: уверенность ограничена, зелёный тег пока не присвоен.',['smallFleet'],'limited');
+assess('Prowler','mixed','скрытные атаки / PvE','Игроки выделяют малую заметность и крупные пушки для скрытной канонерки. Это реальное применение помимо десанта, но не доказательство превосходства в открытых дуэлях.',['drops','pve'],'limited','Скрытная канонерка|Десантный');
+assess('Eclipse','mixed','быстрый торпедный удар PvE','В свежем разборе PvE предлагают уничтожать главную цель торпедой и уходить. Это узкий сценарий; данных о доле успешных попаданий и стабильном доходе недостаточно для зелёного тега.',['pve'],'limited');
+assess('Vanguard Sentinel','mixed','соло-PvE','Есть свежая положительная рекомендация для одиночных боевых контрактов. Это оценка применения в PvE, а не подтверждение меты EMP или превосходства над Guardian и M80.',['pve'],'limited');
+assess('M2 Hercules','mixed','PvE с перевозкой груза','Упоминается как компромисс для пилота, которому важны и бой, и вместимость. Для чистого боя игроки выделяют другие корабли; лидерство именно военного транспорта отдельно не доказано.',['pve'],'limited');
+assess('A2 Hercules','mixed','PvE с перевозкой груза','Рекомендуется с оговоркой, когда вместе с боем нужен грузовой объём. Этот отзыв не является проверкой эффективности бомб и не даёт зелёный тег наземной бомбардировке.',['pve'],'limited');
+assess('Tiburon','mixed','пушечный PvE','В свежем сравнении критикуют требовательность лучевого оружия к дистанции и условиям боя; Corsair называют удобнее по управлению. CIG отдельно отмечает проблему питания после смены генератора в Arena Commander — не переносим её на весь PU.',['pve','knownIssues'],'limited');
+assess('Cutter','mixed','первый универсальный корабль','Игроки рекомендуют как полноценный стартовый корабль с интерьером. В том же обсуждении Titan выделяют за вооружение и грузовой отсек: Cutter — удобный старт, но не безусловный лидер эффективности.',['starters'],'limited');
+assess('Intrepid','mixed','первый универсальный корабль','Хвалят полноценный интерьер и дополнительное место для груза, но спорят о пользе относительно Aurora Mk II и Titan. Для старта подходит; явного лидерства отзывы не показывают.',['starters'],'limited');
+assess('Aurora Mk II','mixed','первый универсальный корабль','Владельцы положительно оценивают модульность и продолжают пользоваться кораблём рядом с более дорогими моделями. Для разных задач участники также рекомендуют Titan, Cutter и Intrepid — универсального победителя нет.',['starters'],'limited');
+
+// Reports exist, but do not establish a competitive position. Keep these neutral
+// and tell the reader exactly what was found instead of claiming no reviews exist.
+assess('C8R Pisces','unknown','компактная медицинская поддержка','Свежий отзыв рекомендует C8R как полезный недорогой медицинский корабль. Есть обсуждение размещения в носителе, но мнения о посадке расходятся. Сравнения эффективности эвакуации с другими медкораблями пока нет в подборке.',['soloFleet','medRover']);
+assess('Ursa Medivac','unknown','медицинская поддержка с носителем','Игроки предлагают Ursa Medivac вместо установки медицинского корабля в грузовом отсеке; одновременно сообщают о проблеме выхода из койки стрелками. Полезность подтверждается отзывами, лидерство среди вариантов поддержки не установлено.',['medRover']);
+assess('Terrapin Medic','unknown','бункеры и наземные задания','В комментарии от 23 октября игрок описывает регулярные вылеты на бункеры и задания Onyx. Это свидетельство практического применения, но один отзыв не определяет место среди C8R, Cutlass Red и Apollo.',['daily']);
+for(const name of ['Apollo Triage','Apollo Medivac'])assess(name,'unknown','лечение и эвакуация','Владельцы Apollo жалуются на недостаток содержательных медицинских заданий. Это ограничение профессии, а не доказательство слабости конкретной версии. Свежего сопоставления Triage и Medivac в подборке нет.',['ems']);
+assess('Retaliator','unknown','торпедные и модульные задачи','Есть свежие жалобы владельцев на состояние корабля, но без подробного сравнения успешности торпедных вылетов. Их недостаточно для честного вывода о метовости; пожелание переработки само по себе не рейтинг.',['tali','agingNow']);
+assess('Avenger Stalker','unknown','захват живых целей','Обсуждение 4.10.2 сообщает, что камеры для заключённых ещё не дают полноценного игрового цикла захвата. Оценивать его как реализованную мету захвата нельзя; боевые возможности требуют отдельного сравнения.',['capture']);
+assess('Cutlass Blue','unknown','перехват / захват целей','В обсуждении 4.10.2 критикуют отсутствие игрового цикла перевозки заключённых. Это не опровергает пользу квантового перехвата; для оценки именно перехвата нужна другая подборка отзывов.',['capture']);
