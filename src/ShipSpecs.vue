@@ -2,6 +2,7 @@
 import {computed,ref,watch} from 'vue';
 import FieldValue from './FieldValue.vue';
 import CrewValue from './CrewValue.vue';
+import {crewExplanationUrl} from './crew-summary.js';
 import FieldScope from './FieldScope.vue';
 import ShipPvp from './ShipPvp.vue';
 import {fieldVisible} from './field-presentation.js';
@@ -47,6 +48,7 @@ function navigate(id){section.value=id;group.value='';search.value=''}
   <nav class="specs-tabs" aria-label="Разделы характеристик"><button :class="{active:section==='overview'&&!searching}" @click="navigate('overview')">Обзор</button><button v-for="s in sections" :key="s.id" :class="{active:section===s.id&&!searching}" @click="navigate(s.id)">{{s.label}} <span>{{counts[s.id]}}</span></button></nav>
   <template v-if="section==='overview'&&!searching">
    <div class="specs-summary"><button v-for="f in summary" :key="f.key" @click="$emit('add',f)" :aria-label="'Фильтр '+f.label"><span>{{f.key==='crewMin'?'Экипаж':f.label}}</span><CrewValue v-if="f.key==='crewMin'" :values="ship.values" :format="format" /><strong v-else>{{summaryValue(f)}} <small>{{f.unit}}</small></strong><span class="summary-plus">＋</span></button></div>
+   <details class="crew-explanation"><summary>Как считаем экипаж</summary><p>Минимум для полёта — один пилот для базового управления исправным кораблём. Штатный минимум в источниках означает работу по назначению, поэтому может быть больше. Максимум людей внутри, включая стоящих пассажиров, не опубликован: число кресел его не определяет. Рекомендуемый состав отмечен знаком ≈: это ориентир по штатному максимуму, а не проверенный оптимум для любой задачи. Для концептов полётный минимум не подтверждён.</p><a :href="crewExplanationUrl" target="_blank" rel="noreferrer">Как RSI определяет экипаж ↗</a></details>
    <div v-if="deflection.length" class="deflection-overview"><h3>Броня · Deflection</h3><div class="specs-summary deflection-summary"><button v-for="f in deflection" :key="f.key" :data-field="f.key" @click="$emit('add',f)" :aria-label="'Фильтр '+f.label"><span>{{f.label.replace('Deflection · ','')}}</span><strong>{{format(ship.values[f.key])}} <small>{{f.unit}}</small></strong><span class="summary-plus">＋</span></button></div></div>
    <ShipPvp :ship="ship" :data="pvp" />
    <p class="specs-tip">Нажмите на показатель, чтобы добавить его в воронку. Подробности — в разделах ниже.</p>
