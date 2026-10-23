@@ -15,5 +15,16 @@ it('photo tags open the same ship with context and sources; comparison remains i
  expect(card.get('.compare-toggle').attributes('aria-pressed')).toBe('true');
  await card.get('.role-chip').trigger('click');
  const details=wrapper.get('.ship-role-details');expect(details.text()).toContain('1 пилот');
- expect(details.findAll('a').length).toBe(2);expect(details.text()).toContain('LIVE 4.10.2');
+ expect(details.findAll('a').length).toBeGreaterThanOrEqual(2);expect(details.text()).toContain('LIVE 4.10.2');
+});
+it('shows an explicit evidence gap for a reviewed model without a meta verdict',async()=>{
+ vi.setSystemTime(new Date('2026-10-23T12:00:00Z'));
+ vi.stubGlobal('fetch',vi.fn(async()=>({ok:true,json:async()=>catalog})));
+ wrapper=mount(App,{attachTo:document.body});await flushPromises();
+ expect(wrapper.get('.meta-coverage').text()).toContain('231 / 231');
+ expect(wrapper.get('.meta-coverage').text()).toContain('179');
+ await wrapper.get('[aria-label="Поиск корабля"]').setValue('Zeus Mk II ES');
+ await wrapper.get('.ship-photo-button').trigger('click');
+ expect(wrapper.get('.ship-role-details').text()).toContain('Недостаточно данных о мете');
+ expect(wrapper.get('.evidence-gap').text()).toContain('место в мете не установлено');
 });

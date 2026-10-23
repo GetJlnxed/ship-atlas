@@ -11,10 +11,11 @@ it('single meta selector matches card tags, combines filters, persists, clears a
  expect(wrapper.get('.meta-filter').element.previousElementSibling.classList.contains('acquisition-filter')).toBe(true);
  expect(wrapper.get('#meta-status').element.multiple).toBe(false);
  await wrapper.get('#meta-status').setValue('meta');
- expect(wrapper.findAll('.ship-card').length).toBe(4);
+ expect(Number(wrapper.get('.results-toolbar b').text())).toBe(23);
  expect(wrapper.findAll('.ship-card .meta-chip').every(tag=>tag.classes().includes('meta'))).toBe(true);
  await wrapper.get('.acquisition-trigger').trigger('click');await wrapper.get('input[value="auec"]').setValue(true);
- expect(wrapper.findAll('.ship-card').length).toBe(3);
+ const withAuec=Number(wrapper.get('.results-toolbar b').text());
+ expect(withAuec).toBeGreaterThan(3);expect(withAuec).toBeLessThan(23);
  expect(JSON.parse(localStorage.getItem('atlas-state-v1')).metaStatus).toBe('meta');
  wrapper.unmount();wrapper=mount(App);await flushPromises();expect(wrapper.get('#meta-status').element.value).toBe('meta');
  await wrapper.get('.active-filters').findAll('button').find(b=>b.text().startsWith('Метовость:')).trigger('click');

@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {catalogRoles,shipRoleProfile,ROLE_REVIEW,roleReviews} from '../src/ship-roles.js';
+import {catalogRoles,shipRoleProfile,ROLE_REVIEW,roleReviews,roleCoverage} from '../src/ship-roles.js';
 const catalog=JSON.parse(fs.readFileSync('public/data/catalog.json','utf8'));
 const now=new Date('2026-10-23T12:00:00Z');
 const ship=name=>catalog.ships.find(s=>s.name===name);
@@ -16,14 +16,34 @@ test('all catalogue roles have readable Russian tags, including mixed roles',()=
 test('meta judgments have evidence and a role; absent and conflicting evidence are not negative',()=>{
  for(const name of Object.keys(roleReviews)){assert.ok(ship(name),name);const p=profile(name);assert.ok(p.sources.length);assert.ok(p.reason);assert.ok(p.context)}
  assert.equal(profile('Arrow').status,'meta');
- assert.equal(profile('Corsair').status,'offmeta');assert.match(profile('Corsair').label,/грузовые контракты/);
+ assert.equal(profile('Corsair').status,'meta');assert.match(profile('Corsair').label,/PvE/);
  assert.equal(profile('F7A Hornet Mk II').status,'mixed');
  assert.equal(profile('Zeus Mk II ES').status,'unknown');
  assert.equal(profile('Talon Shrike').status,'unknown');
  assert.equal(profile('Gladius Pirate Edition').status,'unknown');
 });
-test('meta labels expire and never apply to PTU, unknown builds, concepts or ground vehicles',()=>{
+test('meta labels expire and never apply to PTU, unknown builds or concepts',()=>{
  for(const patch of ['4.11.0-live.1','4.10.2-ptu.12913470',undefined])assert.equal(shipRoleProfile(ship('Arrow'),patch,now).status,'unknown');
  assert.equal(shipRoleProfile(ship('Arrow'),ROLE_REVIEW.patch,new Date('2026-11-24')).status,'unknown');
- for(const values of [{status:'in-concept'},{status:'flight-ready',ground:true}])assert.equal(shipRoleProfile({...ship('Arrow'),values},ROLE_REVIEW.patch,now).status,'unknown');
+ assert.equal(shipRoleProfile({...ship('Arrow'),values:{status:'in-concept'}},ROLE_REVIEW.patch,now).status,'unknown');
+});
+test('every flight-ready entry has an explicit audit, including ground and special editions',()=>{
+ const ready=catalog.ships.filter(s=>s.values.status==='flight-ready');
+ assert.equal(ready.length,231);
+ assert.deepEqual(Object.keys(roleReviews).sort(),ready.map(s=>s.name).sort());
+ for(const s of ready){const p=profile(s.name);assert.equal(p.reviewed,true,s.name);assert.ok(p.roles.length&&p.reason&&p.context,s.name)}
+ const c=roleCoverage(catalog.ships,ROLE_REVIEW.patch,now);
+ assert.deepEqual(c,{available:231,reviewed:231,rated:52,meta:23,mixed:28,offmeta:1,unknown:179});
+ assert.equal(profile('ROC').reviewed,true);
+ assert.equal(profile('ROC').rated,false);
+ assert.equal(profile('ROC').status,'unknown');
+ assert.equal(profile('Golem OX').status,'unknown');
+ assert.equal(profile('Golem').status,'meta');
+ assert.equal(profile('MOLE').status,'meta');
+ assert.equal(profile('Argo Mole Carbon Edition').status,'unknown');
+ assert.match(profile('MOTH').context,/разбор корпуса/);
+ assert.match(profile('MOTH').reason,/RMC не относится/);
+ for(const name of ['Javelin','Bengal'])assert.match(profile(name).reason,/доступность обычного владения/);
+ assert.equal(roleCoverage(catalog.ships,'4.11.0-live.1',now).reviewed,0);
+ assert.equal(shipRoleProfile({name:'New ship',values:{status:'flight-ready'}},ROLE_REVIEW.patch,now).reviewed,false);
 });
