@@ -4,14 +4,13 @@
 .ship-visual .status-pill,.ship-visual .added-badge{pointer-events:none}
 .ship-card .compare-toggle{width:auto;height:auto;min-height:32px;padding:6px 10px;font-size:11px;font-weight:600;white-space:nowrap;background:#132126ed;backdrop-filter:blur(8px)}
 .ship-card .compare-toggle.chosen{background:var(--accent)}
-.crew-value{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;line-height:1.5}
+.crew-value{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;line-height:1.5}
 .crew-value>span{display:flex;flex-direction:column;align-items:flex-start;gap:5px}
 .crew-value small{font:inherit;font-size:10px;color:var(--muted)}
 .crew-value b{font:500 14px var(--mono);color:#dfe7e7}
 .ship-specs .crew-value>span{font-size:inherit}
 .specs-summary .crew-value{margin-top:8px}
 .specs-summary .crew-value b{font-size:18px}
-.crew-value .crew-unknown,.specs-summary .crew-value .crew-unknown{font:500 10px Manrope,Arial,sans-serif;color:var(--muted)}
 .ship-card .ship-specs{grid-template-columns:repeat(2,minmax(0,1fr));padding-bottom:12px}
 .card-crew,.card-deflection{border-top:1px solid var(--line);padding:12px 0}
 .card-stat-title{display:block;font-size:10px;color:#a0b4b8;margin-bottom:8px}
@@ -23,6 +22,6 @@
 .crew-explanation{font-size:11px;color:var(--muted);line-height:1.8;margin:12px 0 20px}
 .crew-explanation p{margin:8px 0}.crew-explanation a{color:var(--accent)}
 .specs-summary>button:has(.crew-value){grid-column:span 2}
-.catalog-table .crew-value{min-width:290px}
+.catalog-table .crew-value{min-width:200px}
 @media(max-width:760px) and (min-width:431px){.ship-card .compare-toggle{top:auto;bottom:8px;right:8px}.ship-specs .crew-value{gap:0 8px}.crew-value small{font-size:8px}}
 @media(prefers-reduced-motion:reduce){.ship-photo-button img{transition:none}}
