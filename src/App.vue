@@ -8,9 +8,10 @@ import ShipSpecs from './ShipSpecs.vue';
 import CrewValue from './CrewValue.vue';
 import CardDeflection from './CardDeflection.vue';
 import ShipRoleTags from './ShipRoleTags.vue';
-import {shipRoleProfile} from './ship-roles.js';
+import {shipRoleProfile,roleCoverage} from './ship-roles.js';
 const metaStatus=ref('');
-const metaOptions=[{value:'',label:'Любая оценка'},{value:'meta',label:'Метовые'},{value:'offmeta',label:'Не метовые'},{value:'mixed',label:'Спорный выбор'},{value:'unknown',label:'Без оценки / не проверена'}];
+const metaOptions=[{value:'',label:'Любая оценка'},{value:'meta',label:'Метовые'},{value:'offmeta',label:'Не метовые'},{value:'mixed',label:'Спорный выбор'},{value:'unknown',label:'Недостаточно данных / без оценки'}];
+const metaCoverage=computed(()=>roleCoverage(catalog.value?.ships,catalog.value?.pvp?.patch));
 import AcquisitionFilter from './AcquisitionFilter.vue';
 import {acquisitionOptions,acquisitionMethods,matchesAcquisition,acquisitionNote} from './acquisition.js';
 const acquisition=ref([]);
@@ -87,7 +88,7 @@ watch([modal,builder],()=>{document.body.style.overflow=modal.value||builder.val
     <div class="filter-section"><label class="section-label">Тип техники</label><div class="segmented"><button v-for="[key,label] in [['all','Все'],['ship','Корабли'],['ground','Наземная']]" :key="key" :class="{selected:kind===key}" @click="kind=key">{{label}}</button></div></div>
     <div class="filter-section"><label class="section-label" for="status">Готовность</label><select id="status" v-model="status"><option value="">Любой статус</option><option v-for="s in statuses" :value="s" :key="s">{{fmt(s)}}</option></select></div>
     <AcquisitionFilter v-model="acquisition" :counts="acquisitionCounts" />
-    <div class="filter-section meta-filter"><label for="meta-status" class="section-label">Метовость</label><select id="meta-status" v-model="metaStatus" aria-describedby="meta-filter-note"><option v-for="o in metaOptions" :key="o.value" :value="o.value">{{o.label}}</option></select><small id="meta-filter-note" class="muted">Оценка в роли, указанной на карточке. Без оценки — не значит не метовый.</small></div>
+    <div class="filter-section meta-filter"><label for="meta-status" class="section-label">Метовость</label><select id="meta-status" v-model="metaStatus" aria-describedby="meta-filter-note"><option v-for="o in metaOptions" :key="o.value" :value="o.value">{{o.label}}</option></select><small id="meta-filter-note" class="muted">Оценка в роли, указанной на карточке. Без оценки — не значит не метовый.</small><details class="meta-coverage"><summary>Охват разбора · {{metaCoverage.reviewed}} / {{metaCoverage.available}}</summary><p>Все записи «В игре», включая технику и специальные версии. Разбор роли не равен проверке меты.</p><p>{{metaCoverage.meta}} метовых · {{metaCoverage.mixed}} спорных · {{metaCoverage.offmeta}} вне меты.<br>У {{metaCoverage.unknown}} недостаточно данных для оценки.</p></details></div>
     <details class="filter-section" open><summary class="section-label">Производитель <span>{{manufacturers.length||'Все'}}</span></summary><div class="manufacturer-list"><label v-for="m in manufacturerOptions" :key="m" class="check-row"><input type="checkbox" :value="m" v-model="manufacturers"><span>{{m}}</span><small>{{ships.filter(s=>s.values.manufacturer===m).length}}</small></label></div></details>
     <div class="filter-section"><label for="cargo" class="section-label">Груз <span>SCU</span></label><div class="number-field"><span>от</span><input id="cargo" type="number" min="0" step="any" placeholder="Любой" v-model="minCargo"></div><div class="range-presets"><button v-for="n in [0,32,100,500]" :key="n" @click="minCargo=n">{{n}}+</button></div></div>
     <div class="filter-section"><label for="crew" class="section-label">Минимальный экипаж <span>чел.</span></label><div class="number-field"><span>до</span><input id="crew" type="number" min="0" placeholder="Любой" v-model="maxCrew"></div></div>
@@ -125,5 +126,6 @@ watch([modal,builder],()=>{document.body.style.overflow=modal.value||builder.val
 
 <style>
 .meta-filter small{display:block;margin-top:8px;font-size:10px;line-height:1.6}
+.meta-coverage{margin-top:10px;color:var(--muted);font-size:10px;line-height:1.6}.meta-coverage summary{cursor:pointer;color:var(--accent)}
 .acquisition-match{font-size:10px;line-height:1.6;color:var(--accent);margin:0 0 12px;overflow-wrap:anywhere}
 </style>

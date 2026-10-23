@@ -12,8 +12,9 @@ const profile=computed(()=>shipRoleProfile(props.ship,props.patch));
    <p>{{profile.reason}}</p>
    <details class="role-evidence"><summary>Почему такие теги · источники</summary>
     <p>{{profile.roleNote}}</p>
-    <p v-if="profile.reviewed">Обзор от 23.10.2026 · LIVE {{profile.patch}}<br>Условия: {{profile.context}} · {{profile.crew}}.</p>
-    <p>Цвет — редакционная оценка для указанной задачи по отзывам игроков, а не статистика побед. Зелёный — сильный выбор в этой роли; красный — есть более подходящие альтернативы. Спорные и непроверенные варианты остаются нейтральными. Оснащение и опыт экипажа влияют на результат.</p>
+    <p v-if="profile.reviewed">Разбор от 23.10.2026 · LIVE {{profile.patch}}<br>Сценарий: {{profile.context}} · {{profile.crew}}.</p>
+    <p v-if="profile.reviewed && !profile.rated" class="evidence-gap">Роль разобрана, место в мете не установлено. Справочник оснащения не заменяет сравнительные игровые испытания.</p>
+    <p>Цвет относится только к указанной задаче. Зелёный — сильный выбор по отзывам игроков; красный — есть более подходящие альтернативы. «Спорный выбор» означает противоречивые отзывы или заметные компромиссы. «Недостаточно данных» — свежей сравнительной оценки нет. Это не статистика побед; оснащение и экипаж влияют на результат.</p>
     <ul v-if="profile.sources.length"><li v-for="source in profile.sources" :key="source.url"><a :href="source.url" target="_blank" rel="noreferrer">{{source.label}} ↗</a></li></ul>
    </details>
   </template>
@@ -33,6 +34,7 @@ const profile=computed(()=>shipRoleProfile(props.ship,props.patch));
 .ship-role-details>p{font-size:12px;line-height:1.7;color:#becfd4;margin:12px 0}
 .role-evidence{font-size:11px;line-height:1.7;color:var(--muted)}
 .role-evidence summary{cursor:pointer;color:var(--accent)}
+.evidence-gap{padding:9px 11px;border-left:2px solid var(--muted);background:#ffffff05}
 .role-evidence a{color:var(--accent)}.role-evidence ul{padding-left:18px}.role-evidence li+li{margin-top:5px}
 @media(max-width:430px){.role-chip,.meta-chip{font-size:11px}}
 </style>
