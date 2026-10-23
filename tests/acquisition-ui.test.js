@@ -1,0 +1,26 @@
+import {it,expect,vi,afterEach} from 'vitest';
+import {mount,flushPromises} from '@vue/test-utils';
+import fs from 'node:fs';
+import App from '../src/App.vue';
+import {acquisitionMethods} from '../src/acquisition.js';
+const catalog=JSON.parse(fs.readFileSync('public/data/catalog.json','utf8'));let wrapper;
+afterEach(()=>{wrapper?.unmount();vi.unstubAllGlobals();localStorage.clear();document.body.innerHTML=''});
+it('multi-select combines methods, intersects readiness, persists and resets with old-state compatibility',async()=>{
+ localStorage.clear();vi.stubGlobal('fetch',vi.fn(async()=>({ok:true,json:async()=>catalog})));
+ wrapper=mount(App,{attachTo:document.body});await flushPromises();
+ const section=wrapper.get('.acquisition-filter');expect(section.element.previousElementSibling.textContent).toContain('Готовность');
+ await section.get('.acquisition-trigger').trigger('click');
+ await section.get('input[value="quest"]').setValue(true);await section.get('input[value="pyro"]').setValue(true);
+ const expected=catalog.ships.filter(s=>acquisitionMethods(s).some(m=>['quest','pyro'].includes(m)));
+ expect(Number(wrapper.get('.results-toolbar b').text())).toBe(expected.length);
+ expect(section.get('.acquisition-trigger').text()).toContain('Выбрано: 2');
+ expect(wrapper.get('.acquisition-match').text()).toMatch(/наградная версия/);
+ await wrapper.get('#status').setValue('flight-ready');
+ expect(Number(wrapper.get('.results-toolbar b').text())).toBe(expected.filter(s=>s.values.status==='flight-ready').length);
+ expect(JSON.parse(localStorage.getItem('atlas-state-v1')).acquisition).toEqual(['quest','pyro']);
+ wrapper.unmount();wrapper=mount(App);await flushPromises();expect(wrapper.get('input[value="quest"]').element.checked).toBe(true);
+ await wrapper.get('input[value="quest"]').setValue(false);expect(wrapper.get('input[value="pyro"]').element.checked).toBe(true);
+ await wrapper.get('.sidebar-title .text-button').trigger('click');expect(Number(wrapper.get('.results-toolbar b').text())).toBe(catalog.ships.length);
+ const old=JSON.parse(localStorage.getItem('atlas-state-v1'));delete old.acquisition;localStorage.setItem('atlas-state-v1',JSON.stringify(old));
+ wrapper.unmount();wrapper=mount(App);await flushPromises();expect(wrapper.get('.acquisition-trigger').text()).toContain('Любой способ');
+});
