@@ -1,6 +1,7 @@
 <script setup>
 import {computed,ref,watch} from 'vue';
 import FieldValue from './FieldValue.vue';
+import CrewValue from './CrewValue.vue';
 import FieldScope from './FieldScope.vue';
 import ShipPvp from './ShipPvp.vue';
 import {fieldVisible} from './field-presentation.js';
@@ -45,7 +46,7 @@ function navigate(id){section.value=id;group.value='';search.value=''}
   <div class="field-search specs-search"><input v-model="search" type="search" placeholder="Найти характеристику во всех разделах…" aria-label="Поиск характеристик корабля"><FieldScope v-model="scope" /></div>
   <nav class="specs-tabs" aria-label="Разделы характеристик"><button :class="{active:section==='overview'&&!searching}" @click="navigate('overview')">Обзор</button><button v-for="s in sections" :key="s.id" :class="{active:section===s.id&&!searching}" @click="navigate(s.id)">{{s.label}} <span>{{counts[s.id]}}</span></button></nav>
   <template v-if="section==='overview'&&!searching">
-   <div class="specs-summary"><button v-for="f in summary" :key="f.key" @click="$emit('add',f)" :aria-label="'Фильтр '+f.label"><span>{{f.label}}</span><strong>{{summaryValue(f)}} <small>{{f.unit}}</small></strong><span class="summary-plus">＋</span></button></div>
+   <div class="specs-summary"><button v-for="f in summary" :key="f.key" @click="$emit('add',f)" :aria-label="'Фильтр '+f.label"><span>{{f.key==='crewMin'?'Экипаж':f.label}}</span><CrewValue v-if="f.key==='crewMin'" :values="ship.values" :format="format" /><strong v-else>{{summaryValue(f)}} <small>{{f.unit}}</small></strong><span class="summary-plus">＋</span></button></div>
    <div v-if="deflection.length" class="deflection-overview"><h3>Броня · Deflection</h3><div class="specs-summary deflection-summary"><button v-for="f in deflection" :key="f.key" :data-field="f.key" @click="$emit('add',f)" :aria-label="'Фильтр '+f.label"><span>{{f.label.replace('Deflection · ','')}}</span><strong>{{format(ship.values[f.key])}} <small>{{f.unit}}</small></strong><span class="summary-plus">＋</span></button></div></div>
    <ShipPvp :ship="ship" :data="pvp" />
    <p class="specs-tip">Нажмите на показатель, чтобы добавить его в воронку. Подробности — в разделах ниже.</p>

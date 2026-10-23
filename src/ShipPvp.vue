@@ -1,7 +1,8 @@
 <script setup>
 import {computed,ref,watch} from 'vue';
 import {REVIEW_DATE,threats,sources,currentData,numeric,threshold,armorCheck,weaponDescription,canPilotControl,pilotControlState,activeLoadout,defaultStations,assessThreat} from './pvp.js';
-const props=defineProps({ship:Object,data:Object});
+const props=defineProps({ship:Object,data:Object,controlsOnly:Boolean,requestedCrew:Number});
+const emit=defineEmits(['configuration']);
 const profile=computed(()=>props.data?.profiles?.[props.ship.id]);
 const crew=ref(1),reserve=ref(0),selected=ref([]),linked=ref([]),tab=ref('threats'),group=ref('all'),bonus=ref(0);
 const maxCrew=computed(()=>Math.max(1,numeric(profile.value?.crewMax)??numeric(props.ship.values.crewMax)??20));
@@ -27,12 +28,15 @@ watch(()=>props.ship.id,()=>{crew.value=1;reserve.value=0;selected.value=[];link
 function setCrew(value){crew.value=value;clampCrew();selected.value=defaultStations({...profile.value,stations:independent.value},crew.value,reserve.value)}
 function setLinked(id,checked){if(!canPilotControl(stations.value.find(s=>s.id===id),props.data?.patch))return;linked.value=checked?[...linked.value,id]:linked.value.filter(x=>x!==id);selected.value=selected.value.filter(x=>x!==id)}
 function checkStation(id,checked){selected.value=checked?[...selected.value,id].slice(0,capacity.value):selected.value.filter(x=>x!==id)}
+watch(()=>props.requestedCrew,value=>{if(value!==undefined)setCrew(value)},{immediate:true});
+watch([loadout,crew,reserve,unverifiedPilotStations],()=>emit('configuration',{loadout:loadout.value,crew:crew.value,reserve:reserve.value,unverified:unverifiedPilotStations.value.length}),{immediate:true});
 </script>
 <template>
  <section class="pvp-panel" aria-label="PvP-профиль корабля">
-  <header class="pvp-heading"><div><div class="eyebrow">БОЕВОЙ ПРОФИЛЬ</div><h3>Кого сможете встретить</h3></div><span class="pvp-patch">{{data?.patch||'Патч не подтверждён'}}</span></header>
-  <p class="pvp-intro">Оценка условий для боя со штатными пушками. Экипаж, занятые турели и тип противника учитываются отдельно. Это не вероятность победы.</p>
-  <div class="pvp-crew"><span>На борту</span><div class="pvp-segments"><button v-for="count in [1,2,3]" :key="count" :disabled="count>maxCrew" :class="{active:crew===count}" :aria-pressed="crew===count" @click="setCrew(count)">{{count}} {{count===1?'человек':'человека'}}</button></div><label v-if="maxCrew>3" class="pvp-other-crew">Другое число <input type="number" min="1" :max="maxCrew" v-model="crew" @change="setCrew(Number(crew))" aria-label="Число членов экипажа"></label></div>
+  <header v-if="!controlsOnly" class="pvp-heading"><div><div class="eyebrow">БОЕВОЙ ПРОФИЛЬ</div><h3>Кого сможете встретить</h3></div><span class="pvp-patch">{{data?.patch||'Патч не подтверждён'}}</span></header>
+  <p v-if="!controlsOnly" class="pvp-intro">Оценка условий для боя со штатными пушками. Экипаж, занятые турели и тип противника учитываются отдельно. Это не вероятность победы.</p>
+  <p v-if="controlsOnly" class="pvp-comparison-crew">В расчёте: {{crew}} чел.<span v-if="requestedCrew>maxCrew"> · вместимость {{maxCrew}}, остальные вне корабля</span></p>
+  <div v-else class="pvp-crew"><span>На борту</span><div class="pvp-segments"><button v-for="count in [1,2,3]" :key="count" :disabled="count>maxCrew" :class="{active:crew===count}" :aria-pressed="crew===count" @click="setCrew(count)">{{count}} {{count===1?'человек':'человека'}}</button></div><label v-if="maxCrew>3" class="pvp-other-crew">Другое число <input type="number" min="1" :max="maxCrew" v-model="crew" @change="setCrew(Number(crew))" aria-label="Число членов экипажа"></label></div>
   <p v-if="crew<(profile?.crewMin||0)" class="pvp-note">Ниже заявленного минимума экипажа ({{profile.crewMin}}). Оценка огневых постов не подтверждает возможность полноценно обслуживать корабль.</p>
   <details class="pvp-stations"><summary>Боевые посты · активные орудия: {{loadout.guns.length}} · занятые турели: {{loadout.turrets.length}}</summary>
    <div class="pvp-station-content">
@@ -49,6 +53,7 @@ function checkStation(id,checked){selected.value=checked?[...selected.value,id].
    </div>
   </details>
   <p v-if="unverifiedPilotStations.length" class="pvp-control-caveat" role="status">В расчёт включены турели с известным управлением пилотом: {{unverifiedPilotStations.map(s=>s.label).join(', ')}}. Их работа в текущем LIVE не проверена; оценка предполагает, что эта возможность работает.</p>
+  <template v-if="!controlsOnly">
   <div class="pvp-armor-preview" aria-label="Краткая проверка брони"><button v-for="w in preview" :key="w.id" @click="tab='armor'" :class="w.state"><span>{{w.name.replace(' Ballistic Gatling','').replace(' Cannon','')}}<small>{{weaponDescription(w)}}</small></span><b>{{w.label}}</b><span class="pvp-preview-threats">Сценарии: {{weaponThreats(w).map(t=>t.name).join(' · ')}}</span></button></div>
   <p class="pvp-note">Проверка порога: целая броня корпуса, без щитов, обычное попадание{{damageBonus?`, урон +${damageBonus}%`:''}}. Это не неуязвимость: слабые места и износ брони считаются иначе.</p>
   <nav class="pvp-tabs" aria-label="Боевой анализ"><button :class="{active:tab==='threats'}" :aria-pressed="tab==='threats'" @click="tab='threats'">Противники</button><button :class="{active:tab==='armor'}" :aria-pressed="tab==='armor'" @click="tab='armor'">Броня против пушек</button></nav>
@@ -63,5 +68,6 @@ function checkStation(id,checked){selected.value=checked?[...selected.value,id].
    <p class="pvp-note">«Броня не остановит снаряд» означает, что урон одного снаряда выше порога целой брони корпуса. Это не гарантирует поражение компонента или уничтожение корабля. «Целая броня блокирует снаряд» относится только к целому корпусу без слабых мест. На точном равенстве показываем «На границе».</p>
   </div>
   <details class="pvp-method"><summary>Как читать оценку · источники и ограничения</summary><p>Обзор угроз проверен {{REVIEW_DATE}} для 4.10.2 LIVE. Это сообщения игроков, а не статистика встреч или результаты турнира. Контрольные пушки показывают возможные угрозы, а не единственный лодаут группы.</p><p>Условия для боя: хотя бы одно активное орудие проходит порог корпуса эталона, а обе скорости разворота составляют не менее 85% от эталона. Это условный порог интерфейса. Занятая турель с подходящей пушкой даёт отдельную оценку обороны. Для M80 отдельно сравнивается скорость форсажа SCM.</p><p>Не рассчитаны навык пилотов, точность, сектора турелей, дистанция обнаружения, длительность форсажа, распределение питания, ракеты, щиты в момент попадания и урон по слабым местам. Орудия считаются штатными; смена экипажа не меняет оружие.</p><p>Сравнение брони использует урон одного снаряда и соответствующий физический или энергетический deflection целого корпуса. Неизвестные и неоднозначные значения не заменяются нулём. Изношенная броня может пропускать меньшие снаряды; для турелей и двигателей действуют отдельные модификаторы.</p><a :href="sources.armor" target="_blank" rel="noopener noreferrer">CIG: принцип работы deflection и слабые места ↗</a><p>Снимок характеристик: {{data?.fetchedAt||'неизвестно'}} · {{data?.patch||'версия не подтверждена'}}. При смене патча набор угроз требует повторной проверки.</p></details>
+  </template>
  </section>
 </template>

@@ -1,0 +1,15 @@
+.ship-photo-button{display:block;position:relative;width:100%;height:100%;padding:0;text-align:initial}
+.ship-photo-button img{width:100%;height:100%;object-fit:cover;position:relative;z-index:1;filter:saturate(.68);transition:transform .4s}
+.ship-card:hover .ship-photo-button img{transform:scale(1.04)}
+.ship-visual .status-pill,.ship-visual .added-badge{pointer-events:none}
+.ship-card .compare-toggle{width:auto;height:auto;min-height:32px;padding:6px 10px;font-size:11px;font-weight:600;white-space:nowrap;background:#132126ed;backdrop-filter:blur(8px)}
+.ship-card .compare-toggle.chosen{background:var(--accent)}
+.crew-value{display:flex;flex-wrap:wrap;gap:4px 12px;line-height:1.5}
+.crew-value>span{display:inline-flex;align-items:baseline;gap:5px;white-space:nowrap}
+.crew-value small{font:inherit;font-size:10px;color:var(--muted)}
+.crew-value b{font:500 14px var(--mono);color:#dfe7e7}
+.ship-specs .crew-value>span{font-size:inherit}
+.specs-summary .crew-value{margin-top:8px}
+.specs-summary .crew-value b{font-size:21px}
+@media(max-width:760px) and (min-width:431px){.ship-card .compare-toggle{top:auto;bottom:8px;right:8px}.ship-specs .crew-value{gap:0 8px}.crew-value small{font-size:8px}}
+@media(prefers-reduced-motion:reduce){.ship-photo-button img{transition:none}}

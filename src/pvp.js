@@ -78,7 +78,7 @@ export function activeLoadout(profile,crew=1,reserve=0,selected=[],linked=[],pat
     unused:Math.max(0,crew-1-reserve-turrets.length)};
 }
 
-export function assessThreat(threat,profile,loadout,data){
+export function assessThreat(threat,profile,loadout,data,incomingBonus=0){
   const result=(level,title,reasons)=>({id:threat.id,level,title,reasons});
   if(!currentData(data))return result('unknown','Версия данных не подтверждена',['Нужен снимок 4.10.2 LIVE. Оценка другого патча не переносится автоматически.']);
   if(!profile||profile.status!=='flight-ready'||profile.ground)return result('unknown','Оценка недоступна',['Нет полного набора данных лётного корабля в LIVE.']);
@@ -104,7 +104,7 @@ export function assessThreat(threat,profile,loadout,data){
   }
   const fmt=n=>Number(n.toFixed(1)).toLocaleString('ru-RU');
   const reasons=[`Порог корпуса эталона проходят ${passing.length} из ${loadout.guns.length} активных штатных орудий. Это не расчёт времени уничтожения.`];
-  const incoming=(data.weapons||[]).filter(w=>threat.guns.includes(w.name)).map(w=>({name:w.name,result:armorCheck(profile,w)}));
+  const incoming=(data.weapons||[]).filter(w=>threat.guns.includes(w.name)).map(w=>({name:w.name,result:armorCheck(profile,w,incomingBonus)}));
   const blocked=incoming.filter(w=>w.result.state==='blocked'),passes=incoming.filter(w=>w.result.state==='passes');
   if(blocked.length)reasons.push('Целый корпус блокирует контрольные снаряды: '+blocked.map(w=>w.name).join(', ')+'.');
   if(passes.length)reasons.push('Порог вашей брони проходят: '+passes.map(w=>w.name).join(', ')+'. Щиты и слабые места здесь не рассчитаны.');

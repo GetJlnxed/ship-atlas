@@ -5,4 +5,7 @@ import './comparison.css';
 import './specs.css';
 import './pvp.css';
 import './motion.css';
+import './search-select.css';
+import './pvp-comparison.css';
+import './cards.css';
 createApp(App).mount('#app');
