@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no, viewport-fit=cover">
+<title>Ships | FleetYards.net</title>
+<meta content="FleetYards.net, Your Database for all Information related to Ships from “Star Citizen“." name="description">
+<meta content="Star, Citizen, Spaceships, Ships, Fighter, Database, Squadron, 42, Star, Citizen, English, Chris, Roberts, Online, Game, Space, Simulation" name="keywords">
+<meta property="og:site_name" content="FleetYards.net">
+<meta property="og:title" content="Ships | FleetYards.net">
+<meta property="og:description" content="FleetYards.net, Your Database for all Information related to Ships from “Star Citizen“.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://fleetyards.net/ships/">
+<meta property="og:image" content="https://cdn.fltyrd.net/vite/assets/default-C9KQKszZ.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Ships">
+<link rel="shortcut icon" type="image/png" href="https://cdn.fltyrd.net/vite/assets/favicon-BbkRUaUa.png">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#333333"/>
+<meta name="application-name" content="FleetYards.net">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-title" content="FleetYards.net">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="FleetYards.net">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="/manifest-a5e44f7a.json" />
+<link rel="apple-touch-icon" type="image/png" href="https://cdn.fltyrd.net/vite/assets/icon-iphone-DpSyyUnl.png" />
+<link rel="apple-touch-icon" type="image/png" href="https://cdn.fltyrd.net/vite/assets/icon-ipad-CLNYn468.png" sizes="76x76" />
+<link rel="apple-touch-icon" type="image/png" href="https://cdn.fltyrd.net/vite/assets/icon-iphone-retina-CdZopAvW.png" sizes="120x120" />
+<link rel="apple-touch-icon" type="image/png" href="https://cdn.fltyrd.net/vite/assets/icon-ipad-retina-Crh56hjn.png" sizes="152x152" />
+<link rel="apple-touch-startup-image" type="image/png" href="https://cdn.fltyrd.net/vite/assets/icon-ipad-retina-Crh56hjn.png" />
+<link rel="preconnect" href="https://api.fleetyards.net/v1">
+
+    <style>
+  /* latin */
+  @font-face {
+    font-family: "Orbitron";
+    font-style: normal;
+    font-weight: 500;
+    font-display: swap;
+    src: url(https://cdn.fltyrd.net/vite/assets/yMJRMIlzdpvBhQQL_Qq7dy1biN15-D5fZRRfa.woff2) format("woff2");
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+      U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191,
+      U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  }
+
+  body {
+    background: black;
+    background-color: black;
+    background-image: none;
+  }
+
+  .app-intro {
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    justify-content: space-evenly;
+    height: 100vh;
+    max-width: 100%;
+    margin-top: -80px;
+    margin-bottom: -50px;
+    text-align: center;
+  }
+
+  .app-intro .logo {
+    width: 200px;
+    margin-right: -20px;
+    margin-bottom: 25px;
+  }
+
+  .app-intro h1 {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: "Orbitron", sans-serif;
+    font-size: 2.15rem;
+    font-weight: 500;
+    line-height: 1.2;
+  }
+
+  .app-intro .loader {
+    position: absolute;
+    left: 50%;
+    z-index: 3000;
+    width: 80px;
+    height: 80px;
+    margin: 40px auto;
+    margin-left: -40px;
+    -webkit-transform: rotateZ(45deg);
+    transform: rotateZ(45deg);
+  }
+
+  .app-intro .loader .cube {
+    position: relative;
+    float: left;
+    width: 50%;
+    height: 50%;
+    -webkit-transform: scale(1.1);
+    -ms-transform: scale(1.1);
+    transform: scale(1.1);
+  }
+
+  .app-intro .loader .cube::before {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--color-primary, #428bca);
+    -webkit-transform-origin: 100% 100%;
+    -ms-transform-origin: 100% 100%;
+    transform-origin: 100% 100%;
+    -webkit-animation: loader-foldcubeangle 2.4s infinite linear both;
+    animation: loader-foldCubeAngle 2.4s infinite linear both;
+    content: "";
+  }
+
+  .app-intro .loader .cube2 {
+    -webkit-transform: scale(1.1) rotateZ(90deg);
+    transform: scale(1.1) rotateZ(90deg);
+  }
+
+  .app-intro .loader .cube3 {
+    -webkit-transform: scale(1.1) rotateZ(180deg);
+    transform: scale(1.1) rotateZ(180deg);
+  }
+
+  .app-intro .loader .cube4 {
+    -webkit-transform: scale(1.1) rotateZ(270deg);
+    transform: scale(1.1) rotateZ(270deg);
+  }
+
+  .app-intro .loader .cube2::before {
+    -webkit-animation-delay: 0.3s;
+    animation-delay: 0.3s;
+  }
+
+  .app-intro .loader .cube3::before {
+    -webkit-animation-delay: 0.6s;
+    animation-delay: 0.6s;
+  }
+
+  .app-intro .loader .cube4::before {
+    -webkit-animation-delay: 0.9s;
+    animation-delay: 0.9s;
+  }
+
+  @-webkit-keyframes loader-foldCubeAngle {
+    0%,
+    10% {
+      -webkit-transform: perspective(140px) rotateX(-180deg);
+      transform: perspective(140px) rotateX(-180deg);
+      opacity: 0;
+    }
+
+    25%,
+    75% {
+      -webkit-transform: perspective(140px) rotateX(0deg);
+      transform: perspective(140px) rotateX(0deg);
+      opacity: 1;
+    }
+
+    90%,
+    100% {
+      -webkit-transform: perspective(140px) rotateY(180deg);
+      transform: perspective(140px) rotateY(180deg);
+      opacity: 0;
+    }
+  }
+
+  @keyframes loader-foldCubeAngle {
+    0%,
+    10% {
+      -webkit-transform: perspective(140px) rotateX(-180deg);
+      transform: perspective(140px) rotateX(-180deg);
+      opacity: 0;
+    }
+
+    25%,
+    75% {
+      -webkit-transform: perspective(140px) rotateX(0deg);
+      transform: perspective(140px) rotateX(0deg);
+      opacity: 1;
+    }
+
+    90%,
+    100% {
+      -webkit-transform: perspective(140px) rotateY(180deg);
+      transform: perspective(140px) rotateY(180deg);
+      opacity: 0;
+    }
+  }
+
+  @media (max-width: 992px) {
+    .app-intro h1 {
+      flex-direction: column;
+    }
+
+    .app-intro .logo {
+      width: 200px;
+      margin-right: 0;
+      margin-bottom: 20px;
+    }
+  }
+</style>
+
+    <script>
+  window.APP_VERSION = 'v9.21.0'
+  window.APP_CODENAME = 'Constellation'
+  window.NODE_ENV = 'production'
+  window.GIT_REVISION = '2145610'
+  window.SC_DATA_VERSION = '4.10.2-live.12913470'
+  window.APP_NAME = 'Fleetyards.net'
+  window.STORE_VERSION = '12.0'
+  window.API_VERSION = 'v1'
+  window.API_OAS_VERSION = '3.0.3'
+  window.API_ENDPOINT = 'https://api.fleetyards.net/v1'
+  window.CABLE_ENDPOINT = 'wss://fleetyards.net/cable'
+  window.FRONTEND_ENDPOINT = 'https://fleetyards.net'
+  window.SHORT_DOMAIN = 'fltyrd.net'
+  window.OAUTH_ENDPOINT = 'https://fleetyards.net/oauth'
+  window.ON_SUBDOMAIN = true
+  window.RSI_ENDPOINT = 'https://robertsspaceindustries.com'
+  window.APPSIGNAL_KEY = '6ed09d3e-02fb-48c9-9759-2be9b5f7a343'
+  window.VAPID_PUBLIC_KEY = 'BG73G4r17jPKowG9DDNK9FP0WdVVQakpfYrsO_9srfv8zAviV3ZLtCmnXTO9ZWnkSLaZ1v8Y4iISfK3XvX0tSwQ'
+  window.DATA_PREFETCH = {"features":"[\"oauth-discord\",\"oauth-google\",\"oauth-github\",\"oauth-twitch\",\"vehicle_overview\",\"oauth-bluesky\",\"oauth-citizenid\",\"homepage_redesign\",\"fleet_directory\",\"push_notifications\",\"loadout_editor\",\"oauth-applications\",\"oauth-patreon\",\"trade_routes\",\"hangar_inventories\",\"ship_inventories\"]"}
+  window.MAINTAINER_NAME = 'Marten Klitzke'
+  window.MAINTAINER_MAIL = 'info@fleetyards.net'
+  window.MAINTAINER_ADDRESS_STREET = 'Lindenstraße 8b'
+  window.MAINTAINER_ADDRESS_POSTALCODE = '22880'
+  window.MAINTAINER_ADDRESS_CITY = 'Wedel'
+  window.MAINTAINER_ADDRESS_COUNTRY = 'Germany'
+  window.COPYRIGHT_OWNER = 'Torlek Maru'
+  window.DIRECT_UPLOAD_URL = '/files/direct_uploads/'
+</script>
+
+    
+    <link rel="stylesheet" href="https://cdn.fltyrd.net/vite/assets/tailwind-Dz4TemrS.css" />
+    <link rel="stylesheet" href="https://cdn.fltyrd.net/vite/assets/frontend-DEmbFUGR.css" />
+    <script src="https://cdn.fltyrd.net/vite/assets/frontend-DRpTN4HA.js" crossorigin="" type="module"></script><link rel="modulepreload" href="https://cdn.fltyrd.net/vite/assets/vue-router-DPOw42op.js" as="script" crossorigin="">
+<link rel="modulepreload" href="https://cdn.fltyrd.net/vite/assets/useQuery-54DgMQ3k.js" as="script" crossorigin="">
+<link rel="modulepreload" href="https://cdn.fltyrd.net/vite/assets/useMutation-GN8NedCZ.js" as="script" crossorigin="">
+<link rel="modulepreload" href="https://cdn.fltyrd.net/vite/assets/Tooltip-aEBe-sae.js" as="script" crossorigin="">
+<link rel="modulepreload" href="https://cdn.fltyrd.net/vite/assets/translations-de-Dpe3Ong9.js" as="script" crossorigin="">
+<link rel="modulepreload" href="https://cdn.fltyrd.net/vite/assets/translations-en-C0ceUxMG.js" as="script" crossorigin="">
+<link rel="modulepreload" href="https://cdn.fltyrd.net/vite/assets/translations-es-CNgVxltx.js" as="script" crossorigin="">
+<link rel="modulepreload" href="https://cdn.fltyrd.net/vite/assets/translations-it-Cg27EQbT.js" as="script" crossorigin="">
+<link rel="modulepreload" href="https://cdn.fltyrd.net/vite/assets/translations-fr-DJegaIjH.js" as="script" crossorigin="">
+<link rel="modulepreload" href="https://cdn.fltyrd.net/vite/assets/translations-zh-CN-B2x1ce2x.js" as="script" crossorigin="">
+<link rel="modulepreload" href="https://cdn.fltyrd.net/vite/assets/translations-zh-TW-Biwy-vrJ.js" as="script" crossorigin="">
+<link rel="modulepreload" href="https://cdn.fltyrd.net/vite/assets/Collapsed-BGSXpLfB.js" as="script" crossorigin="">
+<link rel="modulepreload" href="https://cdn.fltyrd.net/vite/assets/dist-DAhhw8UQ.js" as="script" crossorigin="">
+<link rel="modulepreload" href="https://cdn.fltyrd.net/vite/assets/types-4mE4YENM.js" as="script" crossorigin="">
+<link rel="modulepreload" href="https://cdn.fltyrd.net/vite/assets/lib-Cqsn13Uw.js" as="script" crossorigin="">
+<link rel="modulepreload" href="https://cdn.fltyrd.net/vite/assets/lodash.debounce-YnM9T2zc.js" as="script" crossorigin="">
+<link rel="modulepreload" href="https://cdn.fltyrd.net/vite/assets/useFilters-O7g4Ksj5.js" as="script" crossorigin="">
+<link rel="modulepreload" href="https://cdn.fltyrd.net/vite/assets/Router-DUijei2O.js" as="script" crossorigin="">
+<link rel="modulepreload" href="https://cdn.fltyrd.net/vite/assets/parse-Bxdh7gnZ.js" as="script" crossorigin="">
+<link rel="modulepreload" href="https://cdn.fltyrd.net/vite/assets/Panel-BbDpbHLs.js" as="script" crossorigin="">
+<link rel="modulepreload" href="https://cdn.fltyrd.net/vite/assets/Body-CFxUk7bY.js" as="script" crossorigin="">
+<link rel="modulepreload" href="https://cdn.fltyrd.net/vite/assets/vee-validate-rules-BnzfDbNP.js" as="script" crossorigin="">
+<link rel="modulepreload" href="https://cdn.fltyrd.net/vite/assets/axios-CGFSUYG3.js" as="script" crossorigin="">
+<link rel="modulepreload" href="https://cdn.fltyrd.net/vite/assets/FormInput-dNcHZY0u.js" as="script" crossorigin="">
+<link rel="modulepreload" href="https://cdn.fltyrd.net/vite/assets/fyApi-B3KJ-BIO.js" as="script" crossorigin="">
+<link rel="modulepreload" href="https://cdn.fltyrd.net/vite/assets/useCheckStoreVersion-Q4J10Shi.js" as="script" crossorigin="">
+<link rel="modulepreload" href="https://cdn.fltyrd.net/vite/assets/BtnDropdown-byxtaWIB.js" as="script" crossorigin="">
+<link rel="modulepreload" href="https://cdn.fltyrd.net/vite/assets/renamedTableCols-W8rv5Otj.js" as="script" crossorigin="">
+<link rel="modulepreload" href="https://cdn.fltyrd.net/vite/assets/session-DaIJ1vCK.js" as="script" crossorigin="">
+<link rel="modulepreload" href="https://cdn.fltyrd.net/vite/assets/catalogueTokens-Vtqmi2Nc.js" as="script" crossorigin=""><link rel="stylesheet" crossorigin="" href="https://cdn.fltyrd.net/vite/assets/frontend-BfAwCrBX.css" />
+<link rel="stylesheet" crossorigin="" href="https://cdn.fltyrd.net/vite/assets/Collapsed-bbZ55dIc.css" />
+<link rel="stylesheet" crossorigin="" href="https://cdn.fltyrd.net/vite/assets/Router-CGifCSYz.css" />
+<link rel="stylesheet" crossorigin="" href="https://cdn.fltyrd.net/vite/assets/Panel-B3259FPS.css" />
+<link rel="stylesheet" crossorigin="" href="https://cdn.fltyrd.net/vite/assets/Body-CGQ0WSlA.css" />
+<link rel="stylesheet" crossorigin="" href="https://cdn.fltyrd.net/vite/assets/vee-validate-rules-CSgfipn7.css" />
+<link rel="stylesheet" crossorigin="" href="https://cdn.fltyrd.net/vite/assets/FormInput-BdqLx3es.css" />
+<link rel="stylesheet" crossorigin="" href="https://cdn.fltyrd.net/vite/assets/BtnDropdown-BByV5UdU.css" />
+    <meta name="csrf-param" content="authenticity_token" />
+<meta name="csrf-token" content="CuXo3zRPuqwASduJ9dhgVrTGzrkcm6lpBva5QeM6ssQ502vrz_nGyQTV8J-9i-tfHUM_FF2HHnHWfbx47pjgWw" />
+  </head>
+  <body>
+    <div id="app">
+      <div class="app-intro">
+        <h1>
+          <img src="https://cdn.fltyrd.net/vite/assets/logo-UxcD6NnS.png" alt="FleetYards.net" class="logo" />
+          FleetYards.net
+        </h1>
+        <div>
+          <div class="loader">
+            <div class="cube1 cube"></div>
+            <div class="cube2 cube"></div>
+            <div class="cube4 cube"></div>
+            <div class="cube3 cube"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+
+  </body>
+</html>

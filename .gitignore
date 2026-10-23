@@ -1,0 +1,12 @@
+node_modules/
+dist/
+*.log
+*.pid
+npm.tgz
+scripts/package/
+data/import-*/
+data/raw-backup-*/
+docs/screenshots/
+.env
+.env.*
+!.env.example

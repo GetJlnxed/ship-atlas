@@ -1,0 +1,26 @@
+{
+  "name": "ship-atlas",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "vite build",
+    "preview": "vite preview --host 127.0.0.1",
+    "test": "node --test tests/*.test.mjs",
+    "data:build": "node scripts/build-data.mjs",
+    "data:update": "node scripts/update-data.mjs",
+    "test:ui": "vitest run",
+    "start": "node server.mjs"
+  },
+  "dependencies": {
+    "vue": "^3.5.22"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^6.0.1",
+    "@vue/test-utils": "^2.5.1",
+    "happy-dom": "^21.0.4",
+    "vite": "^7.1.12",
+    "vitest": "^5.0.5"
+  }
+}

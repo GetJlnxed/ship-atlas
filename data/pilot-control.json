@@ -1,0 +1,32 @@
+{
+  "reviewedAt": "2026-10-23",
+  "note": "Documented ship capability is independent of exact-build runtime verification. checkedAt is the source review date, not an in-game test date. Never infer capability from seat count or remote mount type.",
+  "records": [
+    {
+      "shipId": "anvl-paladin",
+      "stationId": "fdd1df7e-d6f1-4ba9-acae-0592929eb176",
+      "label": "Левая крыльевая турель",
+      "status": "known",
+      "mode": "simultaneous-pilot-fire",
+      "source": "https://robertsspaceindustries.com/en/comm-link/engineering/20842-Q-A-Paladin-Stinger",
+      "archiveSource": "https://starcitizen.tools/Comm-Link:Q%26A_-_Paladin_%26_Stinger",
+      "sourcePatch": "4.3.2",
+      "checkedAt": "2026-10-23",
+      "note": "CIG: пилот может стрелять из крыльевых турелей вперёд; отдельные стрелки получают независимое управление.",
+      "liveCheck": null
+    },
+    {
+      "shipId": "anvl-paladin",
+      "stationId": "c44c4d4d-7f5e-4951-acd3-79ff9dc37abd",
+      "label": "Правая крыльевая турель",
+      "status": "known",
+      "mode": "simultaneous-pilot-fire",
+      "source": "https://robertsspaceindustries.com/en/comm-link/engineering/20842-Q-A-Paladin-Stinger",
+      "archiveSource": "https://starcitizen.tools/Comm-Link:Q%26A_-_Paladin_%26_Stinger",
+      "sourcePatch": "4.3.2",
+      "checkedAt": "2026-10-23",
+      "note": "CIG: пилот может стрелять из крыльевых турелей вперёд; отдельные стрелки получают независимое управление.",
+      "liveCheck": null
+    }
+  ]
+}

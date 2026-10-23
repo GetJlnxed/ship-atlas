@@ -1,0 +1,111 @@
+import {describe,it,expect,vi,beforeEach,afterEach} from 'vitest';
+import {mount,flushPromises} from '@vue/test-utils';
+import fs from 'node:fs';
+import App from '../src/App.vue';
+const catalog=JSON.parse(fs.readFileSync('public/data/catalog.json','utf8'));
+let wrapper;
+const button=text=>wrapper.findAll('button').find(b=>b.text().includes(text));
+beforeEach(()=>{localStorage.clear();vi.stubGlobal('fetch',vi.fn(async()=>({ok:true,json:async()=>catalog})));});
+afterEach(()=>{wrapper?.unmount();vi.unstubAllGlobals();document.body.innerHTML='';document.body.style.overflow=''});
+async function open(){wrapper=mount(App,{attachTo:document.body});await flushPromises()}
+describe('Catalogue user flows',()=>{
+it('loads real data and searches by name',async()=>{await open();expect(wrapper.findAll('.ship-card')).toHaveLength(24);await wrapper.get('[aria-label="Поиск корабля"]').setValue('100i');expect(wrapper.findAll('.ship-card')).toHaveLength(1);expect(wrapper.get('.ship-title').text()).toContain('100i')});
+it('applies quick filters and resets them',async()=>{await open();await button('Грузовые 100+').trigger('click');expect(wrapper.get('#cargo').element.value).toBe('100');for(const card of wrapper.findAll('.ship-card'))expect(Number(card.find('.ship-specs b').text().replaceAll(/\s/g,''))).toBeGreaterThanOrEqual(100);await button('Сбросить').trigger('click');expect(wrapper.findAll('.ship-card')).toHaveLength(24)});
+it('compares two ships, differences only, preserves selection across search',async()=>{await open();await wrapper.get('[aria-label="Сравнить 100i"]').trigger('click');await wrapper.get('[aria-label="Сравнить 125a"]').trigger('click');await wrapper.get('[aria-label="Поиск корабля"]').setValue('Carrack');expect(wrapper.findAll('.tray-ships button')).toHaveLength(2);await wrapper.get('.compare-tray .primary-button').trigger('click');expect(wrapper.findAll('.comparison-table thead th')).toHaveLength(3);expect(wrapper.get('.comparison-table').text()).toContain('125a');expect(wrapper.findAll('.comparison-table tbody tr').length).toBeGreaterThan(0)});
+it('chooses comparison rows, preserves them across scope changes and reloads, and exports that selection',async()=>{
+ await open();await wrapper.get('[aria-label="Сравнить 100i"]').trigger('click');await wrapper.get('[aria-label="Сравнить 125a"]').trigger('click');await wrapper.get('.compare-tray .primary-button').trigger('click');
+ await wrapper.get('.compare-controls input[type="checkbox"]').setValue(false);
+ await button('Выбрать характеристики').trigger('click');await button('Очистить выбор').trigger('click');
+ expect(wrapper.get('.comparison-table tbody').text()).toContain('Выберите характеристики');
+ await wrapper.get('[aria-label="Найти характеристику для выбора"]').setValue('Груз');
+ await wrapper.get('.picker-field input[data-field="cargo"]').setValue(true);
+ expect(wrapper.findAll('.comparison-table tbody tr')).toHaveLength(1);expect(wrapper.get('.comparison-table tbody th').text()).toContain('Груз');
+ await wrapper.get('[aria-label="Уровень параметров"]').setValue('technical');
+ await wrapper.get('[aria-label="Найти характеристику для выбора"]').setValue('game.ManneuverThruster[].catalogued');
+ await wrapper.get('.picker-field input[data-field="game.ManneuverThruster[].catalogued"]').setValue(true);
+ await wrapper.get('[aria-label="Уровень параметров"]').setValue('standard');
+ expect(wrapper.findAll('.comparison-table tbody tr')).toHaveLength(2);
+ expect(JSON.parse(localStorage.getItem('atlas-comparison-fields-v1'))).toEqual(['cargo','game.ManneuverThruster[].catalogued']);
+ let exported;const create=vi.spyOn(URL,'createObjectURL').mockImplementation(blob=>{exported=blob;return 'blob:test'});
+ const click=vi.spyOn(HTMLAnchorElement.prototype,'click').mockImplementation(()=>{});
+ await wrapper.get('.compare-controls .text-button').trigger('click');
+ const csv=await exported.text();expect(csv).toContain('[cargo]');expect(csv).toContain('[game.ManneuverThruster[].catalogued]');expect(csv).not.toContain('[length]');create.mockRestore();click.mockRestore();
+ wrapper.unmount();await open();await button('Сравнение').trigger('click');
+ await wrapper.get('.compare-controls input[type="checkbox"]').setValue(false);
+ expect(wrapper.findAll('.comparison-table tbody tr')).toHaveLength(2);
+});
+it('keeps an intentionally empty comparison selection on reload',async()=>{
+ localStorage.setItem('atlas-comparison-fields-v1','[]');await open();await button('Сравнение').trigger('click');
+ await button('Выбрать характеристики').trigger('click');expect(wrapper.get('.picker-footer').text()).toContain('Выбрано: 0');
+ await button('Базовый набор').trigger('click');expect(JSON.parse(localStorage.getItem('atlas-comparison-fields-v1')).length).toBeGreaterThan(0);
+});
+it('builds nested rules and persists a named funnel',async()=>{await open();await button('Конструктор воронки').trigger('click');await button('＋ Условие').trigger('click');await wrapper.get('[aria-label="Значение"]').setValue('100');await button('＋ Группа').trigger('click');expect(wrapper.findAll('.rule-group')).toHaveLength(2);await wrapper.get('[aria-label="Закрыть конструктор"]').trigger('click');await button('Мои воронки').trigger('click');await wrapper.get('[aria-label="Название воронки"]').setValue('Тестовый груз');await wrapper.get('.save-form').trigger('submit');expect(wrapper.get('.saved-row').text()).toContain('Тестовый груз');await wrapper.get('.saved-row .outline-button').trigger('click');expect(wrapper.find('.overlay').exists()).toBe(false);expect(JSON.parse(localStorage.getItem('atlas-presets-v1'))).toHaveLength(1)});
+it('does not reset current page when selecting a ship',async()=>{await open();await wrapper.get('[aria-label="Следующая страница"]').trigger('click');expect(wrapper.get('.pagination').text()).toContain('25');await wrapper.find('.compare-toggle').trigger('click');expect(wrapper.get('.pagination').text()).toContain('25')});
+it('opens complete detail and adds a field to the funnel',async()=>{await open();await wrapper.find('.ship-title').trigger('click');expect(wrapper.find('.detail-dialog').exists()).toBe(true);await wrapper.get('[aria-label="Поиск характеристик корабля"]').setValue('hullHealth');expect(wrapper.findAll('.spec-row')).toHaveLength(1);await wrapper.find('.spec-row button').trigger('click');expect(wrapper.find('.builder-dialog').exists()).toBe(true);expect(wrapper.get('[aria-label="Характеристика"]').element.value).toBe('hull')});
+it('separates component thresholds from internal metadata without dropping fields',async()=>{
+ await open();await wrapper.get('[aria-label="Поиск корабля"]').setValue('300i');await wrapper.find('.ship-title').trigger('click');
+ const search=wrapper.get('[aria-label="Поиск характеристик корабля"]');
+ await search.setValue('game.ManneuverThruster[].durability.resistances.physical');
+ expect(wrapper.findAll('.spec-row')).toHaveLength(0);
+ await wrapper.get('[aria-label="Уровень параметров"]').setValue('advanced');
+ expect(wrapper.findAll('.spec-row')).toHaveLength(1);expect(wrapper.get('.spec-row').text()).toContain('Сопротивление урону');
+ expect(wrapper.get('.spec-row').text()).not.toContain('game.ManneuverThruster');
+ await search.setValue('game.ManneuverThruster[].catalogued');expect(wrapper.findAll('.spec-row')).toHaveLength(0);
+ await wrapper.get('[aria-label="Уровень параметров"]').setValue('technical');expect(wrapper.findAll('.spec-row')).toHaveLength(1);
+ expect(wrapper.get('.spec-row').text()).toContain('Запись в каталоге');expect(wrapper.get('.spec-row').text()).toContain('game.ManneuverThruster[].catalogued');
+ await wrapper.get('.spec-row>.icon-button').trigger('click');
+ await wrapper.get('[aria-label="Уровень параметров"]').setValue('standard');
+ expect(wrapper.get('[aria-label="Характеристика"]').element.value).toBe('game.ManneuverThruster[].catalogued');
+ expect(wrapper.get('[aria-label="Значение"]').element.value).toBe('true');
+ await wrapper.get('[aria-label="Значение"]').setValue('false');
+ expect(wrapper.get('.funnel-preview .highlight').text()).not.toMatch(/выборка\s*0$/);
+});
+it('collapses large internal lists and expands them on demand',async()=>{
+ await open();await wrapper.get('[aria-label="Поиск корабля"]').setValue('300i');await wrapper.find('.ship-title').trigger('click');
+ await wrapper.get('[aria-label="Поиск характеристик корабля"]').setValue('game.ManneuverThruster[].slot.name');
+ await wrapper.get('[aria-label="Уровень параметров"]').setValue('technical');
+ const row=wrapper.get('.spec-row');const preview=row.get('.field-value>span').text();
+ const expand=row.get('.value-expand');expect(expand.attributes('aria-expanded')).toBe('false');
+ await expand.trigger('click');expect(expand.attributes('aria-expanded')).toBe('true');
+ expect(row.get('.field-value>span').text().length).toBeGreaterThan(preview.length);
+ await expand.trigger('click');expect(row.get('.field-value>span').text()).toBe(preview);
+});
+it('restores an existing technical funnel in the default presentation mode',async()=>{
+ const rule={id:'legacy',mode:'and',children:[{id:'r1',field:'game.ManneuverThruster[].hidden',op:'eq',value:'false',unknown:'exclude'}]};
+ localStorage.setItem('atlas-state-v1',JSON.stringify({root:rule}));await open();
+ await button('Конструктор воронки').trigger('click');
+ expect(wrapper.get('[aria-label="Уровень параметров"]').element.value).toBe('standard');
+ expect(wrapper.get('[aria-label="Характеристика"]').element.value).toBe('game.ManneuverThruster[].hidden');
+ expect(wrapper.get('[aria-label="Значение"]').element.value).toBe('false');
+});
+it('shows readable RSI equipment without source class names or duplicate record counts',async()=>{
+ await open();await wrapper.get('[aria-label="Поиск корабля"]').setValue('100i');await wrapper.get('.ship-title').trigger('click');
+ await wrapper.get('[aria-label="Поиск характеристик корабля"]').setValue('rsi.compiled.RSIAvionic.radar');
+ await wrapper.get('[aria-label="Уровень параметров"]').setValue('advanced');
+ expect(wrapper.get('.specs-results').text()).toContain('RSI · Радар');
+ const rows=wrapper.findAll('.spec-row').map(row=>row.text()).join(' ');
+ expect(rows).toContain('Название');expect(rows).toContain('Количество креплений');
+ expect(rows).not.toMatch(/RSIAvionic|radar\[\]|component_class|Число записей оборудования/);
+});
+it('starts with a compact overview and bounds section and cross-section search results',async()=>{
+ await open();await wrapper.get('[aria-label="Поиск корабля"]').setValue('Carrack');await wrapper.find('.ship-title').trigger('click');
+ expect(wrapper.findAll('.spec-row')).toHaveLength(0);
+ expect(wrapper.findAll('.specs-summary>button').length).toBeGreaterThan(0);expect(wrapper.findAll('.specs-summary>button').length).toBeLessThanOrEqual(10);
+ await wrapper.findAll('.specs-tabs button').find(b=>b.text().includes('Системы')).trigger('click');
+ expect(wrapper.findAll('.spec-row').length).toBeLessThanOrEqual(12);
+ await wrapper.get('[aria-label="Уровень параметров"]').setValue('technical');
+ await wrapper.get('[aria-label="Поиск характеристик корабля"]').setValue('game.');
+ expect(wrapper.findAll('.spec-row')).toHaveLength(12);
+ const first=wrapper.find('.spec-row').text();await wrapper.get('[aria-label="Следующие характеристики"]').trigger('click');
+ expect(wrapper.find('.spec-row').text()).not.toBe(first);expect(wrapper.findAll('.spec-row')).toHaveLength(12);
+ await wrapper.get('[aria-label="Поиск характеристик корабля"]').setValue('hullHealth');expect(wrapper.findAll('.spec-row')).toHaveLength(1);
+ await wrapper.find('.specs-tabs button').trigger('click');expect(wrapper.findAll('.spec-row')).toHaveLength(0);expect(wrapper.find('.specs-summary').exists()).toBe(true);
+});
+it('bounds the global field explorer and omits removed fields even in technical mode',async()=>{
+ await open();await button('Все характеристики').trigger('click');expect(wrapper.findAll('.field-group>button')).toHaveLength(12);
+ await wrapper.get('[aria-label="Уровень параметров"]').setValue('technical');
+ await wrapper.get('[aria-label="Поиск всех полей"]').setValue('game.ManneuverThruster[].hidden');expect(wrapper.findAll('.field-group>button')).toHaveLength(0);
+ await wrapper.get('[aria-label="Поиск всех полей"]').setValue('hullHealth');expect(wrapper.findAll('.field-group>button')).toHaveLength(1);
+ await wrapper.get('.field-group>button').trigger('click');expect(wrapper.get('[aria-label="Характеристика"]').element.value).toBe('hull');
+});
+});

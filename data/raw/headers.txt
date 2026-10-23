@@ -1,0 +1,21 @@
+HTTP/1.1 200 OK
+cache-control: no-cache
+content-security-policy: default-src 'none'; base-uri 'self'; manifest-src 'self' https://cdn.fltyrd.net https://cdn.fleetyards.net; form-action 'self' https://api.fleetyards.net https://starship42.com https://fleetyards.net https://discord.com https://api.github.com https://github.com https://*.twitch.tv https://accounts.google.com https://bsky.social https://citizenid.space https://citizenid.dev https://www.patreon.com; connect-src 'self' data: wss://fleetyards.net https://api.fleetyards.net https://admin.fleetyards.net https://docs.fleetyards.net https://cdn.fltyrd.net https://cdn.fleetyards.net https://img.youtube.com https://fonts.googleapis.com https://fonts.gstatic.com https://pro.fontawesome.com https://robertsspaceindustries.com https://kit.fontawesome.com https://kit-pro.fontawesome.com https://kit-free.fontawesome.com https://ka-p.fontawesome.com https://starship42.com https://fltyrd-live-storage.fsn1.your-objectstorage.com https://storage.fltyrd.net https://www.gstatic.com https://cdn.jsdelivr.net https://stackpath.bootstrapcdn.com https://appsignal-endpoint.net https://*.basemaps.cartocdn.com; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://cdn.fltyrd.net https://cdn.fleetyards.net https://www.youtube.com/iframe_api https://s.ytimg.com https://kit.fontawesome.com https://kit-pro.fontawesome.com https://kit-free.fontawesome.com https://code.jquery.com https://cdn.jsdelivr.net https://stackpath.bootstrapcdn.com https://starship42.com https://www.gstatic.com; style-src 'self' 'unsafe-inline' https://cdn.fltyrd.net https://cdn.fleetyards.net https://fonts.googleapis.com https://pro.fontawesome.com https://kit-pro.fontawesome.com https://kit-free.fontawesome.com https://ka-p.fontawesome.com; img-src 'self' data: blob: https://fleetyards.net https://api.fleetyards.net https://cdn.fltyrd.net https://cdn.fleetyards.net https://robertsspaceindustries.com https://media.robertsspaceindustries.com https://img.youtube.com https://validator.swagger.io https://fltyrd-live-storage.fsn1.your-objectstorage.com https://storage.fltyrd.net https://*.basemaps.cartocdn.com; font-src 'self' data: https://cdn.fltyrd.net https://cdn.fleetyards.net https://fonts.gstatic.com https://pro.fontawesome.com https://kit-pro.fontawesome.com https://kit-free.fontawesome.com https://ka-p.fontawesome.com; frame-src 'self' blob: https://fleetyards.net https://youtu.be https://www.youtube.com https://www.youtube-nocookie.com https://starship42.com https://starship42.fleetyards.net; child-src 'self' blob: https://fleetyards.net; worker-src 'self' blob: https://fleetyards.net; prefetch-src 'self' data: blob: https://fleetyards.net https://api.fleetyards.net https://cdn.fltyrd.net https://cdn.fleetyards.net https://robertsspaceindustries.com https://media.robertsspaceindustries.com https://img.youtube.com https://validator.swagger.io https://fltyrd-live-storage.fsn1.your-objectstorage.com https://storage.fltyrd.net https://*.basemaps.cartocdn.com; object-src 'self'; frame-ancestors 'self'; upgrade-insecure-requests
+content-type: application/json; charset=utf-8
+permissions-policy: interest-cohort=()
+referrer-policy: strict-origin-when-cross-origin
+strict-transport-security: max-age=63072000; includeSubDomains; preload
+vary: Accept, Accept-Encoding, Origin
+x-content-type-options: nosniff
+x-frame-options: SAMEORIGIN
+x-permitted-cross-domain-policies: none
+x-ratelimit-limit: 5000
+x-ratelimit-remaining: 4998
+x-ratelimit-reset: 2026-10-23T03:00:00+02:00
+x-request-id: 62766c3b-2ac9-420f-90a8-b46ebe64796b
+x-runtime: 3.855345
+x-xss-protection: 0
+date: Fri, 23 Oct 2026 00:22:43 GMT
+transfer-encoding: chunked
+set-cookie: HCLBSTICKY=65b975b49f6352ffb5957ac59f0e74cf|atqo1|atqo1; path=/
+
