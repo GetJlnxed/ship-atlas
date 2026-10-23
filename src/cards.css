@@ -23,5 +23,8 @@
 .crew-explanation p{margin:8px 0}.crew-explanation a{color:var(--accent)}
 .specs-summary>button:has(.crew-value){grid-column:span 2}
 .catalog-table .crew-value{min-width:200px}
-@media(max-width:760px) and (min-width:431px){.ship-card .compare-toggle{top:auto;bottom:8px;right:8px}.ship-specs .crew-value{gap:0 8px}.crew-value small{font-size:8px}}
+@media(max-width:760px) and (min-width:431px){.ship-card .compare-toggle{top:8px;bottom:auto;right:8px}.ship-specs .crew-value{gap:0 8px}.crew-value small{font-size:8px}}
 @media(prefers-reduced-motion:reduce){.ship-photo-button img{transition:none}}
+
+.ship-body>.added-badge{position:static;display:inline-block;margin-bottom:8px}
+.ship-card .ship-visual{min-height:180px}
