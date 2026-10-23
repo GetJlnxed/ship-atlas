@@ -9,6 +9,15 @@ beforeEach(()=>{localStorage.clear();vi.stubGlobal('fetch',vi.fn(async()=>({ok:t
 afterEach(()=>{wrapper?.unmount();vi.unstubAllGlobals();document.body.innerHTML='';document.body.style.overflow=''});
 async function open(){wrapper=mount(App,{attachTo:document.body});await flushPromises()}
 describe('Catalogue user flows',()=>{
+it('opens the photo separately from comparison and labels both crew values',async()=>{
+ await open();await wrapper.get('[aria-label="Поиск корабля"]').setValue('F8C Lightning');
+ const card=wrapper.get('.ship-card');expect(card.get('.crew-value').text()).toMatch(/Мин\.\s*1\s*Рек\.\s*1/);
+ const compare=card.get('.compare-toggle');expect(compare.text()).toBe('В сравнение');
+ await compare.trigger('click');expect(compare.text()).toBe('В сравнении');expect(wrapper.find('.detail-dialog').exists()).toBe(false);
+ await compare.trigger('click');expect(compare.text()).toBe('В сравнение');
+ await card.get('.ship-photo-button').trigger('click');expect(wrapper.get('.detail-dialog').text()).toContain('F8C Lightning');
+ expect(wrapper.get('.specs-summary .crew-value').text()).toMatch(/Мин\.\s*1\s*Рек\.\s*1/);
+});
 it('loads real data and searches by name',async()=>{await open();expect(wrapper.findAll('.ship-card')).toHaveLength(24);await wrapper.get('[aria-label="Поиск корабля"]').setValue('100i');expect(wrapper.findAll('.ship-card')).toHaveLength(1);expect(wrapper.get('.ship-title').text()).toContain('100i')});
 it('applies quick filters and resets them',async()=>{await open();await button('Грузовые 100+').trigger('click');expect(wrapper.get('#cargo').element.value).toBe('100');for(const card of wrapper.findAll('.ship-card'))expect(Number(card.find('.ship-specs b').text().replaceAll(/\s/g,''))).toBeGreaterThanOrEqual(100);await button('Сбросить').trigger('click');expect(wrapper.findAll('.ship-card')).toHaveLength(24)});
 it('compares two ships, differences only, preserves selection across search',async()=>{await open();await wrapper.get('[aria-label="Сравнить 100i"]').trigger('click');await wrapper.get('[aria-label="Сравнить 125a"]').trigger('click');await wrapper.get('[aria-label="Поиск корабля"]').setValue('Carrack');expect(wrapper.findAll('.tray-ships button')).toHaveLength(2);await wrapper.get('.compare-tray .primary-button').trigger('click');expect(wrapper.findAll('.comparison-table thead th')).toHaveLength(3);expect(wrapper.get('.comparison-table').text()).toContain('125a');expect(wrapper.findAll('.comparison-table tbody tr').length).toBeGreaterThan(0)});
