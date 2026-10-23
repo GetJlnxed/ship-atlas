@@ -21,9 +21,9 @@ it('shows an explicit evidence gap for a reviewed model without a meta verdict',
  vi.setSystemTime(new Date('2026-10-23T12:00:00Z'));
  vi.stubGlobal('fetch',vi.fn(async()=>({ok:true,json:async()=>catalog})));
  wrapper=mount(App,{attachTo:document.body});await flushPromises();
- expect(wrapper.get('.meta-coverage').text()).toContain('Оценка меты · 71 / 231');
- expect(wrapper.get('.meta-coverage').text()).toContain('160');
- await wrapper.get('[aria-label="Поиск корабля"]').setValue('Zeus Mk II ES');
+ expect(wrapper.get('.meta-coverage').text()).toContain('Оценка меты · 77 / 231');
+ expect(wrapper.get('.meta-coverage').text()).toContain('154');
+ await wrapper.get('[aria-label="Поиск корабля"]').setValue('Talon Shrike');
  await wrapper.get('.ship-photo-button').trigger('click');
  expect(wrapper.get('.ship-role-details').text()).toContain('Мета не определена');
  expect(wrapper.get('.evidence-gap').text()).toContain('Место в мете не установлено');

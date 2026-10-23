@@ -19,7 +19,7 @@ test('meta judgments have evidence and a role; absent and conflicting evidence a
  assert.equal(profile('Arrow').status,'meta');
  assert.equal(profile('Corsair').status,'meta');assert.match(profile('Corsair').label,/PvE/);
  assert.equal(profile('F7A Hornet Mk II').status,'mixed');
- assert.equal(profile('Zeus Mk II ES').status,'unknown');
+ assert.equal(profile('Zeus Mk II ES').status,'mixed');
  assert.equal(profile('Talon Shrike').status,'unknown');
  assert.equal(profile('Gladius Pirate Edition').status,'unknown');
 });
@@ -34,7 +34,7 @@ test('every flight-ready entry has an explicit audit, including ground and speci
  assert.deepEqual(Object.keys(roleReviews).sort(),ready.map(s=>s.name).sort());
  for(const s of ready){const p=profile(s.name);assert.equal(p.reviewed,true,s.name);assert.ok(p.roles.length&&p.reason&&p.context,s.name)}
  const c=roleCoverage(catalog.ships,ROLE_REVIEW.patch,now);
- assert.deepEqual(c,{available:231,reviewed:231,rated:71,meta:23,mixed:43,offmeta:5,unknown:160});
+ assert.deepEqual(c,{available:231,reviewed:231,rated:77,meta:23,mixed:49,offmeta:5,unknown:154});
  assert.equal(profile('ROC').reviewed,true);
  assert.equal(profile('ROC').rated,true);
  assert.equal(profile('ROC').status,'mixed');
@@ -50,7 +50,7 @@ test('every flight-ready entry has an explicit audit, including ground and speci
 });
 
 test('follow-up distinguishes reports, tentative judgments, and unresearched catalogue descriptions',()=>{
- assert.equal(followupReviewNames.length,27);
+ assert.equal(followupReviewNames.length,41);
  for(const name of followupReviewNames){
   const p=profile(name);
   assert.equal(p.playerReports,true,name);
@@ -69,5 +69,14 @@ test('follow-up distinguishes reports, tentative judgments, and unresearched cat
  assert.equal(profile('Starfarer Gemini').status,'unknown');
  assert.equal(profile('Cutter Scout').status,'unknown');
  assert.equal(profile('Syulen').status,'unknown');
+ assert.equal(profile('325a').status,'mixed');
+ assert.equal(profile('315p').status,'unknown');
+ assert.equal(profile('315p').playerReports,true);
+ assert.equal(profile('F7C-M Super Hornet Mk I').status,'mixed');
+ assert.equal(profile('F7C-M Super Hornet Heartseeker Mk I').status,'unknown');
+ assert.match(profile('Skylark').reason,/стыковке/);
+ assert.equal(profile('Fury').status,'unknown');
+ assert.equal(profile('Fury').playerReports,true);
+ assert.equal(profile('Scorpius Antares').status,'unknown');
  assert.equal(shipRoleProfile(ship('400i'),'4.10.2-ptu.12913470',now).playerReports,false);
 });
